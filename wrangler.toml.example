@@ -1,0 +1,78 @@
+name = "iodrive"
+main = "src/index.ts"
+compatibility_date = "2026-09-12"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+preview_urls = false
+account_id = "YOUR_ACCOUNT_ID"
+routes = [{ pattern = "YOUR_DOMAIN/*", zone_name = "YOUR_ZONE" }]
+
+[vars]
+SITE_ID = "production" # 每个部署必须唯一，用于缓存和 JWT 隔离
+ADMIN_USER = "admin"
+APP_DOMAIN = "YOUR_DOMAIN" # Worker 对外域名，WebDAV 内部回调依赖此值
+# PUBLIC_DOMAIN = "YOUR_STORAGE_PUBLIC_DOMAIN" # 通用对象直链域名
+TURNSTILE_SITE_KEY = "YOUR_TURNSTILE_SITE_KEY"
+PUBLIC_UPLOAD_PATH = "uploads/public/"
+PUBLIC_UPLOAD_MAX_BYTES = "2147483648" # 默认 2 GiB，可按成本预算调整
+
+# ── R2 存储（可选） ──────────────────────────────────────
+# Cloudflare R2 原生存储，零出口流量费
+# 如不使用 R2，请删除下方所有 R2 相关配置和 [[r2_buckets]] 部分
+# 不配置 R2 时，系统会使用下方 S3 兼容存储作为唯一后端
+# R2_PUBLIC_DOMAIN = "YOUR_R2_DOMAIN"
+# R2_BUCKET = "YOUR_R2_BUCKET"
+# R2_ACCOUNT_ID = "YOUR_ACCOUNT_ID"
+
+# ── 多后端存储配置（至少需要一个 S3 兼容存储） ──────────────
+# 支持同时配置多个 S3 兼容存储后端，格式为 JSON 数组
+# 每个后端包含：name(名称) / provider(提供商) / endpoint / bucket / region / sync(是否同步写入)
+# 路径风格(pathStyle)会根据 provider 和 endpoint 自动检测，也可手动指定
+#
+# 支持的 provider:
+#   aws          - AWS S3
+#   r2           - Cloudflare R2 (通过 S3 API)
+#   b2           - Backblaze B2
+#   minio        - MinIO (自建)
+#   alibaba      - 阿里云 OSS
+#   tencent      - 腾讯云 COS
+#   wasabi       - Wasabi
+#   digitalocean - DigitalOcean Spaces
+#   volcengine   - 火山引擎 TOS
+#   custom       - 自定义 S3 兼容
+#
+# STORAGE_CONFIG = '[{"name":"main","provider":"aws","endpoint":"s3.amazonaws.com","bucket":"my-bucket","region":"us-east-1","primary":true,"sync":true}]'
+
+# ── D1 元数据库（必需） ─────────────────────────────────
+[[d1_databases]]
+binding = "META_DB"
+database_name = "iodrive-meta"
+database_id = "YOUR_D1_DATABASE_ID"
+migrations_dir = "database/migrations"
+
+# ── R2 存储桶绑定（可选，使用 R2 时需要） ──────────────────
+# [[r2_buckets]]
+# binding = "DRIVE"
+# bucket_name = "YOUR_R2_BUCKET"
+
+# ── KV 缓存命名空间（可选，用于缓存文件索引和列表提升性能） ──────────────
+# [[kv_namespaces]]
+# binding = "CACHE_KV"
+# id = "YOUR_KV_NAMESPACE_ID"
+
+# ── Cloudflare Workers 速率限制服务（防火墙限流） ─────────────────
+# [[ratelimits]]
+# name = "RATE_LIMITER"
+# namespace_id = "1001"
+# [ratelimits.simple]
+# limit = 100
+# period = 60
+
+[observability]
+enabled = true
+[observability.logs]
+invocation_logs = true
+head_sampling_rate = 1
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.01

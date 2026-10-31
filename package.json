@@ -1,0 +1,26 @@
+{
+  "name": "cloudflare-iodrive",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "typecheck": "tsc --noEmit",
+    "build": "wrangler deploy src/index.ts --name iodrive --compatibility-date 2026-09-12 --dry-run --outdir=dist",
+    "check": "npm run typecheck && npm run build",
+    "test": "npm run check",
+    "deploy": "wrangler deploy",
+    "cf-types": "wrangler types"
+  },
+  "dependencies": {
+    "hono": "^4.0.0",
+    "jose": "^6.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.0.0",
+    "typescript": "^5.0.0",
+    "wrangler": "^4.107.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

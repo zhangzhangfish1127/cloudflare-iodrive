@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Cloudflare
+.wrangler/
+dist/
+wrangler.toml
+wrangler.demo.toml
+
+# Environment
+.env
+.dev.vars
+
+# Claude
+CLAUDE.md
+
+.cf-imgbed-research
